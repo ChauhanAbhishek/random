@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable name="item"
+            type="com.rapido.youtube_rapido.model.response.Item"/>
+    </data>
+<androidx.constraintlayout.widget.ConstraintLayout
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:padding="20dp"
@@ -24,6 +29,7 @@
         app:layout_constraintStart_toEndOf="@id/iv_video"
         app:layout_constraintTop_toTopOf="parent"
         android:padding="20dp"
+        android:text="@{item.getSnippet().getTitle()}"
         android:id="@+id/tv_title"/>
 
     <ImageView
@@ -37,3 +43,5 @@
         app:srcCompat="@drawable/ic_play_arrow_black_48dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

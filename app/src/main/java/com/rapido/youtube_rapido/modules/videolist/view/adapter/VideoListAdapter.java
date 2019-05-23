@@ -7,9 +7,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.databinding.BindingMethod;
+import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.rapido.youtube_rapido.R;
+import com.rapido.youtube_rapido.databinding.ItemVideoItemBinding;
 import com.rapido.youtube_rapido.model.response.Item;
 import com.squareup.picasso.Picasso;
 
@@ -52,9 +55,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         if(viewType==NORMAL)
         {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.item_video_item, parent, false);
-            return new VideoItemViewHolder(itemView);
+            ItemVideoItemBinding parentCommentItemBinding = DataBindingUtil
+                    .inflate(LayoutInflater.from(parent.getContext()), R.layout.item_video_item,
+                            parent, false);
+            return new VideoItemViewHolder(parentCommentItemBinding);
         }
         else
         {
@@ -82,22 +86,20 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     public class VideoItemViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvTitle;
-        ImageView ivVideo;
+        ItemVideoItemBinding itemVideoItemBinding;
 
-        VideoItemViewHolder(@NonNull View itemView) {
-            super(itemView);
-            tvTitle = itemView.findViewById(R.id.tv_title);
-            ivVideo = itemView.findViewById(R.id.iv_video);
+        VideoItemViewHolder(@NonNull ItemVideoItemBinding itemVideoItemBinding) {
+            super(itemVideoItemBinding.getRoot());
+            this.itemVideoItemBinding=itemVideoItemBinding;
         }
 
         void populateView(Item item) {
-            tvTitle.setText(item.getSnippet().getTitle());
-//            if(item.getSnippet().getThumbnails().getStandard().getUrl()!=null)
-//            {
-//                picasso.load(item.getSnippet().getThumbnails().getStandard().getUrl())
-//                        .into(ivVideo);
-//            }
+           // tvTitle.setText(item.getSnippet().getTitle());
+            if(item.getId()!=null&&item.getSnippet().getThumbnails().getStandard()!=null)
+            {
+                picasso.load(item.getSnippet().getThumbnails().getStandard().getUrl())
+                        .into(itemVideoItemBinding.ivVideo);
+            }
         }
     }
 
