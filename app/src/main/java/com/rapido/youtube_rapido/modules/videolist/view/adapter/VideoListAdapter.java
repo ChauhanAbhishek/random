@@ -21,6 +21,10 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private List<Item> items = new ArrayList<>();
     private Picasso picasso;
 
+    private static int NORMAL=0;
+    private static int FOOTER=1;
+
+
     public VideoListAdapter(Picasso picasso) {
         this.picasso = picasso;
     }
@@ -30,12 +34,35 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         notifyDataSetChanged();
     }
 
+    public void addItem(Item item)
+    {
+        this.items.add(item);
+        notifyDataSetChanged();
+    }
+
+    public void removeItem()
+    {
+        if(items.size()>0&&items.get(items.size()-1).getId()==null)
+        this.items.remove(items.size()-1);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_video_item, parent, false);
-        return new VideoItemViewHolder(itemView);
+        if(viewType==NORMAL)
+        {
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_video_item, parent, false);
+            return new VideoItemViewHolder(itemView);
+        }
+        else
+        {
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.footer_item, parent, false);
+            return new FooterViewHolder(itemView);
+        }
+
     }
 
     @Override
@@ -66,22 +93,34 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         void populateView(Item item) {
             tvTitle.setText(item.getSnippet().getTitle());
-            picasso.load(item.getSnippet().getThumbnails().getStandard().getUrl())
-                    .into(ivVideo);
+//            if(item.getSnippet().getThumbnails().getStandard().getUrl()!=null)
+//            {
+//                picasso.load(item.getSnippet().getThumbnails().getStandard().getUrl())
+//                        .into(ivVideo);
+//            }
         }
     }
 
     public class FooterViewHolder extends RecyclerView.ViewHolder {
 
-        TextView tvTitle;
+        TextView loadingText;
 
         FooterViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvTitle = itemView.findViewById(R.id.tv_title);
+            loadingText = itemView.findViewById(R.id.loading_text);
         }
 
         void populateView(Item item) {
-            tvTitle.setText(item.getSnippet().getTitle());
+            //tvTitle.setText(item.getSnippet().getTitle());
         }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+
+        if(items.get(position).getId()!=null)
+            return NORMAL;
+        else
+            return FOOTER;
     }
 }
