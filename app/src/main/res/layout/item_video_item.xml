@@ -14,33 +14,74 @@
 
     <ImageView
         android:id="@+id/iv_video"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="21dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tv_title"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitXY"
+        app:layout_constraintDimensionRatio="h,1:1"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="ContentDescription" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:id="@+id/tv_title"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toEndOf="@id/iv_video"
-        app:layout_constraintTop_toTopOf="parent"
-        android:padding="20dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="32dp"
+        android:gravity="center"
+        android:maxLines="2"
         android:text="@{item.getSnippet().getTitle()}"
-        android:id="@+id/tv_title"/>
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_video" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="48dp"
         android:layout_height="48dp"
         app:layout_constraintBottom_toBottomOf="@+id/iv_video"
-        app:layout_constraintEnd_toStartOf="@+id/tv_title"
+        app:layout_constraintEnd_toEndOf="@+id/iv_video"
         app:layout_constraintStart_toStartOf="@+id/iv_video"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/iv_video"
         app:srcCompat="@drawable/ic_play_arrow_black_48dp" />
+
+    <TextView
+        android:id="@+id/stats"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@{item.getSnippet().getChannelTitle()}"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_title"
+        app:layout_constraintStart_toStartOf="@+id/tv_title"
+        app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+
+    <TextView
+        android:id="@+id/date_posted"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="@{item.getSnippet().getPublishedAt()}"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/stats"
+        app:layout_constraintStart_toStartOf="@+id/stats"
+        app:layout_constraintTop_toBottomOf="@+id/stats" />
+
+    <TextView
+        android:id="@+id/duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="#000000"
+        android:textColor="#ffffff"
+        android:text="@{item.getContentDetails().getDuration()}"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_video"
+        app:layout_constraintEnd_toEndOf="@+id/iv_video" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

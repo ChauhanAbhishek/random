@@ -73,6 +73,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if(holder instanceof VideoItemViewHolder) {
             ((VideoItemViewHolder) holder).populateView(items.get(position));
+            ((VideoItemViewHolder) holder).getItemVideoItemBinding().setItem(items.get(position));
         }
         if(holder instanceof FooterViewHolder) {
             ((FooterViewHolder) holder).populateView(items.get(position));
@@ -92,6 +93,12 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             super(itemVideoItemBinding.getRoot());
             this.itemVideoItemBinding=itemVideoItemBinding;
         }
+
+        public ItemVideoItemBinding getItemVideoItemBinding() {
+            return itemVideoItemBinding;
+        }
+
+
 
         void populateView(Item item) {
            // tvTitle.setText(item.getSnippet().getTitle());
