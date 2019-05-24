@@ -1,6 +1,8 @@
 package com.rapido.youtube_rapido.app.di.modules;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -12,11 +14,14 @@ import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
 
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
@@ -32,14 +37,35 @@ public class NetworkModule {
 
     @ApplicationScope
     @Provides
-    HttpLoggingInterceptor httpLoggingInterceptor() {
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(message -> {
-            if(BuildConfig.DEBUG) {
-                Log.d("Network",message);
+    Interceptor httpLoggingInterceptor(Context context) {
+//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(message -> {
+//            if(BuildConfig.DEBUG) {
+//                Log.d("Network",message);
+//            }
+//        });
+//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//
+//
+//        return interceptor;
+
+        return new Interceptor() {
+            @Override
+            public Response intercept(Chain chain) throws IOException {
+                Response originalResponse = chain.proceed(chain.request());
+                Log.d("cnrr","intercepted");
+                if (isNetworkAvailable(context)) {
+                    int maxAge = 60; // read from cache for 1 minute
+                    return originalResponse.newBuilder()
+                            .header("Cache-Control", "public, max-age=" + maxAge)
+                            .build();
+                } else {
+                    int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
+                    return originalResponse.newBuilder()
+                            .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                            .build();
+                }
             }
-        });
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        return interceptor;
+        };
     }
 
     @ApplicationScope
@@ -56,9 +82,9 @@ public class NetworkModule {
 
     @ApplicationScope
     @Provides
-    OkHttpClient okHttpClient(Cache cache,HttpLoggingInterceptor httpLoggingInterceptor) {
+    OkHttpClient okHttpClient(Cache cache,Interceptor httpLoggingInterceptor) {
         return new OkHttpClient.Builder()
-                .addInterceptor(httpLoggingInterceptor)
+                .addNetworkInterceptor(httpLoggingInterceptor)
                 .cache(cache)
                 .build();
     }
@@ -94,6 +120,24 @@ public class NetworkModule {
         return new Picasso.Builder(context)
                 .downloader(new OkHttp3Downloader(okHttpClient))
                 .build();
+    }
+
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivity =(ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (connectivity == null) {
+            return false;
+        } else {
+            NetworkInfo[] info = connectivity.getAllNetworkInfo();
+            if (info != null) {
+                for (int i = 0; i < info.length; i++) {
+                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }
