@@ -8,6 +8,7 @@ import android.util.Log;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rapido.youtube_rapido.BuildConfig;
+import com.rapido.youtube_rapido.Utils;
 import com.rapido.youtube_rapido.app.di.annotations.ApplicationScope;
 import com.rapido.youtube_rapido.app.service.ApiService;
 import com.squareup.picasso.OkHttp3Downloader;
@@ -37,35 +38,41 @@ public class NetworkModule {
 
     @ApplicationScope
     @Provides
-    Interceptor httpLoggingInterceptor(Context context) {
-//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(message -> {
-//            if(BuildConfig.DEBUG) {
-//                Log.d("Network",message);
-//            }
-//        });
-//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//
-//
-//        return interceptor;
+    Interceptor networkInterceptor(Context context) {
 
         return new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Response originalResponse = chain.proceed(chain.request());
                 Log.d("cnrr","intercepted");
-                if (isNetworkAvailable(context)) {
-                    int maxAge = 60; // read from cache for 1 minute
+                if (Utils.isNetworkAvailable(context)) {
+                    int maxAge = 5; // read from cache for 5 seconds
                     return originalResponse.newBuilder()
                             .header("Cache-Control", "public, max-age=" + maxAge)
                             .build();
                 } else {
-                    int maxStale = 60 * 60 * 24 * 28; // tolerate 4-weeks stale
+                    int maxStale = 60 * 5; // tolerate 5 minutes stale
                     return originalResponse.newBuilder()
                             .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
                             .build();
                 }
             }
         };
+    }
+
+    @ApplicationScope
+    @Provides
+    HttpLoggingInterceptor httpLoggingInterceptor(Context context) {
+                HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(message -> {
+            if(BuildConfig.DEBUG) {
+                Log.d("Network",message);
+            }
+        });
+        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+
+
+        return interceptor;
+
     }
 
     @ApplicationScope
@@ -82,9 +89,10 @@ public class NetworkModule {
 
     @ApplicationScope
     @Provides
-    OkHttpClient okHttpClient(Cache cache,Interceptor httpLoggingInterceptor) {
+    OkHttpClient okHttpClient(Cache cache,HttpLoggingInterceptor httpLoggingInterceptor,Interceptor networkInterceptor) {
         return new OkHttpClient.Builder()
-                .addNetworkInterceptor(httpLoggingInterceptor)
+                .addInterceptor(httpLoggingInterceptor)
+                .addNetworkInterceptor(networkInterceptor)
                 .cache(cache)
                 .build();
     }
@@ -122,22 +130,5 @@ public class NetworkModule {
                 .build();
     }
 
-    public boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connectivity =(ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        if (connectivity == null) {
-            return false;
-        } else {
-            NetworkInfo[] info = connectivity.getAllNetworkInfo();
-            if (info != null) {
-                for (int i = 0; i < info.length; i++) {
-                    if (info[i].getState() == NetworkInfo.State.CONNECTED) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
 
 }
