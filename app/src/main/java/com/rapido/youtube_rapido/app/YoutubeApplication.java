@@ -7,10 +7,7 @@ import com.rapido.youtube_rapido.app.di.component.ApplicationComponent;
 import com.rapido.youtube_rapido.app.di.component.DaggerApplicationComponent;
 import com.rapido.youtube_rapido.app.di.modules.ApplicationContextModule;
 
-/**
- * Created by adityachauhan on 23/06/18.
- *
- */
+
 
 public class YoutubeApplication extends Application {
 

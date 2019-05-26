@@ -5,8 +5,15 @@
     <data>
         <variable name="item"
             type="com.rapido.youtube_rapido.model.response.Item"/>
+
+        <variable name="picasso"
+            type="com.squareup.picasso.Picasso"/>
+
     </data>
+
+
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/video_item_container"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:padding="20dp"
@@ -17,6 +24,8 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="fitXY"
+        app:imageUrl="@{item.getSnippet().getThumbnails().getStandard()}"
+        android:background="#A9A9A9"
         app:layout_constraintDimensionRatio="h,1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

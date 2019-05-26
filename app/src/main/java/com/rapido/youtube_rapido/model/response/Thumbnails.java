@@ -1,6 +1,8 @@
 package com.rapido.youtube_rapido.model.response;
 
-public class Thumbnails {
+import java.io.Serializable;
+
+public class Thumbnails  implements Serializable {
     ThumbnailData medium;
     ThumbnailData high;
     ThumbnailData standard;

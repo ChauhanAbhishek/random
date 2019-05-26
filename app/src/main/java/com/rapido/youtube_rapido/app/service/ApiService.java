@@ -7,10 +7,7 @@ import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
-/**
- * Created by adityachauhan on 23/06/18.
- *
- */
+
 
 
 public interface ApiService {

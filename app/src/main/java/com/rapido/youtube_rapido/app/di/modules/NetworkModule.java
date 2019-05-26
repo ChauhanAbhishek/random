@@ -28,10 +28,7 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-/**
- * Created by adityachauhan on 23/06/18.
- *
- */
+
 
 @Module(includes = ApplicationContextModule.class)
 public class NetworkModule {

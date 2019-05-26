@@ -22,6 +22,8 @@ public class VideoListViewModel extends ViewModel implements ViewModelNonUIChang
     private LiveData<List<Item>> mObservableVideoList;
     private  String nextPageToken;
     private  LiveData<Event<String>> toastMessage;
+    private  MutableLiveData<Event<Item>> mOpenVideoPlayer ;
+
 
     MutableLiveData<Boolean> isReqSent;
 
@@ -32,11 +34,19 @@ public class VideoListViewModel extends ViewModel implements ViewModelNonUIChang
         videoRepository.setViewModelNonUIChangesListener(this);
         isReqSent = new MutableLiveData<>();
         toastMessage = Transformations.map(videoRepository.getToastMessage(), toastMessage -> toastmsg(toastMessage));
+        mOpenVideoPlayer  = new MutableLiveData<>();
     }
 
     public LiveData<Boolean> getIsReqSent() {
         return isReqSent;
     }
+
+
+    public LiveData<Event<Item>> getOpenVideoPlayer() {
+        return mOpenVideoPlayer;
+    }
+
+
 
 
     public void getVideos()
@@ -53,6 +63,9 @@ public class VideoListViewModel extends ViewModel implements ViewModelNonUIChang
             videoRepository.getVideos(nextPageToken);
             isReqSent.setValue(true);
         }
+
+
+
     }
 
     public LiveData<List<Item>> getmObservableVideoList()
@@ -85,6 +98,11 @@ public class VideoListViewModel extends ViewModel implements ViewModelNonUIChang
 
     public void setToastMessage(MutableLiveData<Event<String>> toastMessage) {
         this.toastMessage = toastMessage;
+    }
+
+    public void playVideo(Item item)
+    {
+        mOpenVideoPlayer.setValue(new Event<>(item));
     }
 
     @Override

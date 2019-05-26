@@ -1,6 +1,8 @@
 package com.rapido.youtube_rapido.model.response;
 
-public class PageInfo {
+import java.io.Serializable;
+
+public class PageInfo  implements Serializable {
     private float totalResults;
     private float resultsPerPage;
 

@@ -1,5 +1,6 @@
 package com.rapido.youtube_rapido.modules.videolist.view.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.rapido.youtube_rapido.R;
+import com.rapido.youtube_rapido.app.VideoList.VideoListViewModel;
 import com.rapido.youtube_rapido.databinding.ItemVideoItemBinding;
 import com.rapido.youtube_rapido.model.response.Item;
 import com.squareup.picasso.Picasso;
@@ -23,13 +25,14 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private List<Item> items = new ArrayList<>();
     private Picasso picasso;
+    private VideoListViewModel videoModel;
 
     private static int NORMAL=0;
     private static int FOOTER=1;
 
 
-    public VideoListAdapter(Picasso picasso) {
-        this.picasso = picasso;
+    public VideoListAdapter(VideoListViewModel videoModel) {
+        this.videoModel=videoModel;
     }
 
     public void updateList(List<Item> items) {
@@ -102,11 +105,20 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
         void populateView(Item item) {
            // tvTitle.setText(item.getSnippet().getTitle());
-            if(item.getId()!=null&&item.getSnippet().getThumbnails().getStandard()!=null)
-            {
-                picasso.load(item.getSnippet().getThumbnails().getStandard().getUrl())
-                        .into(itemVideoItemBinding.ivVideo);
-            }
+//            if(item.getId()!=null&&item.getSnippet().getThumbnails().getStandard()!=null)
+//            {
+//                picasso.load(item.getSnippet().getThumbnails().getStandard().getUrl())
+//                        .into(itemVideoItemBinding.ivVideo);
+         //   }
+
+            itemVideoItemBinding.videoItemContainer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.d("cnrc","clicked");
+                    videoModel.playVideo(item);
+                }
+
+            });
         }
     }
 

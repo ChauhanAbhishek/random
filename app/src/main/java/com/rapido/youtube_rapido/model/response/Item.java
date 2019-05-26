@@ -1,6 +1,8 @@
 package com.rapido.youtube_rapido.model.response;
 
-public class Item {
+import java.io.Serializable;
+
+public class Item implements Serializable {
     private String kind;
     private String etag;
     private String id;

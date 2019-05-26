@@ -1,8 +1,9 @@
 package com.rapido.youtube_rapido.model.response;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class VideoResponse {
+public class VideoResponse  implements Serializable {
     private String kind;
     private String etag;
     private String nextPageToken;

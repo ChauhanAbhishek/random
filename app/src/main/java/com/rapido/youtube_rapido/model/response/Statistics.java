@@ -1,6 +1,8 @@
 package com.rapido.youtube_rapido.model.response;
 
-public class Statistics {
+import java.io.Serializable;
+
+public class Statistics  implements Serializable {
     private String viewCount;
     private String likeCount;
     private String dislikeCount;

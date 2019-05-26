@@ -1,8 +1,9 @@
 package com.rapido.youtube_rapido.model.response;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Snippet {
+public class Snippet  implements Serializable {
     private String publishedAt;
     private String channelId;
     private String title;

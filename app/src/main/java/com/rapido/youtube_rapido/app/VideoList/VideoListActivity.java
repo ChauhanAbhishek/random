@@ -1,5 +1,6 @@
 package com.rapido.youtube_rapido.app.VideoList;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.rapido.youtube_rapido.R;
 import com.rapido.youtube_rapido.app.Event;
+import com.rapido.youtube_rapido.app.VideoPlayer.VideoPlayerActivity;
 import com.rapido.youtube_rapido.app.YoutubeApplication;
 import com.rapido.youtube_rapido.app.service.ApiService;
 import com.rapido.youtube_rapido.model.response.Item;
@@ -50,7 +52,11 @@ public class VideoListActivity extends AppCompatActivity {
         rvVideos.setLayoutManager(new LinearLayoutManager(this,
                 RecyclerView.VERTICAL, false));
 
-        videoListAdapter = new VideoListAdapter(YoutubeApplication.getInstance().getApplicationComponent().picasso());
+        videoListViewModel  = ViewModelProviders.of(this).get(VideoListViewModel.class);
+
+
+
+        videoListAdapter = new VideoListAdapter(videoListViewModel);
 
         rvVideos.setAdapter(videoListAdapter);
 
@@ -84,7 +90,6 @@ public class VideoListActivity extends AppCompatActivity {
 //                    }
 //                });
 
-        videoListViewModel  = ViewModelProviders.of(this).get(VideoListViewModel.class);
 
 
         liveData = videoListViewModel.getmObservableVideoList();
@@ -133,8 +138,29 @@ public class VideoListActivity extends AppCompatActivity {
 
         videoListViewModel.getVideos();
 
+        videoListViewModel.getOpenVideoPlayer().observe(this, new Observer<Event<Item>>() {
+            @Override
+            public void onChanged(Event<Item> taskIdEvent) {
+                Item item = taskIdEvent.getContentIfNotHandled();
+                Log.d("cnrc","clicked2 " + item);
+
+                if (item != null) {
+                    playVideo(item);
+                }
+
+            }
+        });
 
 
+
+    }
+
+    public void playVideo(Item item)
+    {
+        // Remember to change to PARCELABLE to send data
+        Intent i = new Intent(this, VideoPlayerActivity.class);
+        i.putExtra("item_object", item);
+        startActivity(i);
     }
 
     public void setUpScrollEndListener()

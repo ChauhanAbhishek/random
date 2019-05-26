@@ -11,10 +11,7 @@ import com.squareup.picasso.Picasso;
 
 import dagger.Component;
 
-/**
- * Created by adityachauhan on 23/06/18.
- *
- */
+
 
 @ApplicationScope
 @Component(modules = {NetworkModule.class, DataModule.class, RepositoryModule.class})
