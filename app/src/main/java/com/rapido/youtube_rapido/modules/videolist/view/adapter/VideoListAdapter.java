@@ -1,5 +1,9 @@
 package com.rapido.youtube_rapido.modules.videolist.view.adapter;
 
+import android.app.Activity;
+import android.app.ActivityOptions;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.rapido.youtube_rapido.R;
 import com.rapido.youtube_rapido.app.VideoList.VideoListViewModel;
+import com.rapido.youtube_rapido.app.VideoPlayer.VideoPlayerActivity;
 import com.rapido.youtube_rapido.databinding.ItemVideoItemBinding;
 import com.rapido.youtube_rapido.model.response.Item;
 import com.squareup.picasso.Picasso;
@@ -24,15 +29,16 @@ import java.util.List;
 public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Item> items = new ArrayList<>();
-    private Picasso picasso;
+    private Context context;
     private VideoListViewModel videoModel;
 
     private static int NORMAL=0;
     private static int FOOTER=1;
 
 
-    public VideoListAdapter(VideoListViewModel videoModel) {
+    public VideoListAdapter(VideoListViewModel videoModel, Context context) {
         this.videoModel=videoModel;
+        this.context = context;
     }
 
     public void updateList(List<Item> items) {
@@ -115,7 +121,13 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 @Override
                 public void onClick(View v) {
                     Log.d("cnrc","clicked");
-                    videoModel.playVideo(item);
+                    //videoModel.playVideo(item);
+
+                    Intent i = new Intent(context, VideoPlayerActivity.class);
+                    i.putExtra("item_object", item);
+                    ActivityOptions options = ActivityOptions
+                            .makeSceneTransitionAnimation((Activity) context, itemVideoItemBinding.ivVideo, "robot");
+                    context.startActivity(i,options.toBundle());
                 }
 
             });

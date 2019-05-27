@@ -56,7 +56,7 @@ public class VideoListActivity extends AppCompatActivity {
 
 
 
-        videoListAdapter = new VideoListAdapter(videoListViewModel);
+        videoListAdapter = new VideoListAdapter(videoListViewModel,this);
 
         rvVideos.setAdapter(videoListAdapter);
 
