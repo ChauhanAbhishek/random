@@ -194,7 +194,6 @@ public class VideoListActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     public void playVideo(String videoId,float seekAt)

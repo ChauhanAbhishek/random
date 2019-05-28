@@ -15,11 +15,12 @@
     <com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
         android:id="@+id/youtube_player_view"
         android:layout_width="match_parent"
-        android:layout_height="64dp"
+        android:layout_height="128dp"
         app:autoPlay="false"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/rv_videos"
-        app:showFullScreenButton="false" />
+        app:showYouTubeButton="false"
+        app:showFullScreenButton="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

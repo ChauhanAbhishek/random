@@ -1,6 +1,7 @@
 package com.rapido.youtube_rapido.app.VideoPlayer;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -19,6 +20,7 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.rapido.youtube_rapido.R;
+import com.rapido.youtube_rapido.Utils;
 import com.rapido.youtube_rapido.databinding.ActivityVideoPlayerBinding;
 import com.rapido.youtube_rapido.model.response.Item;
 
@@ -73,9 +75,18 @@ public class VideoPlayerActivity extends YouTubeBaseActivity implements com.goog
         }
 
         this.youTubePlayer=youTubePlayer;
+
+
+
+
+//        Intent i = new Intent(this, VideoPlayerActivity.class);
+//        i.putExtra("item_object", item);
+//        ActivityOptions options = ActivityOptions
+//                .makeSceneTransitionAnimation((Activity) context, itemVideoItemBinding.ivVideo, "robot");
+//        ((Activity) context).startActivityForResult(i, Utils.PLAYER_START_REQ,options.toBundle());
     }
 
-    @Override
+        @Override
     public void onPlaying() {
 
     }
