@@ -124,8 +124,11 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                     Log.d("cnrc","clicked");
                     videoModel.setPlayerVisibility(false);
 
+
+
                     Intent i = new Intent(context, VideoPlayerActivity.class);
                     i.putExtra("item_object", item);
+                    //i.putExtra("seek_to",0);
                     ActivityOptions options = ActivityOptions
                             .makeSceneTransitionAnimation((Activity) context, itemVideoItemBinding.ivVideo, "robot");
                     ((Activity) context).startActivityForResult(i, Utils.PLAYER_START_REQ,options.toBundle());

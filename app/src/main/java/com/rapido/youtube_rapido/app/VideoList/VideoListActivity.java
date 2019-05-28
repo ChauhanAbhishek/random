@@ -1,10 +1,12 @@
 package com.rapido.youtube_rapido.app.VideoList;
 
 import android.app.Activity;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -23,6 +25,7 @@ import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstan
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.rapido.youtube_rapido.R;
+import com.rapido.youtube_rapido.Utils;
 import com.rapido.youtube_rapido.app.Event;
 import com.rapido.youtube_rapido.app.VideoPlayer.VideoPlayerActivity;
 import com.rapido.youtube_rapido.app.YoutubeApplication;
@@ -52,6 +55,8 @@ public class VideoListActivity extends AppCompatActivity {
     com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView youTubePlayerView;
     ActivityMainBinding activityMainBinding;
 
+    ImageView playerScreenMode;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +68,10 @@ public class VideoListActivity extends AppCompatActivity {
 
         rvVideos = activityMainBinding.rvVideos;
         youTubePlayerView = activityMainBinding.youtubePlayerView;
+
+         playerScreenMode =new ImageView(this);
+        playerScreenMode.setImageResource(R.drawable.ic_close_white_36dp);
+        youTubePlayerView.getPlayerUiController().addView(playerScreenMode);
         rvVideos.setLayoutManager(new LinearLayoutManager(this,
                 RecyclerView.VERTICAL, false));
 
@@ -194,6 +203,16 @@ public class VideoListActivity extends AppCompatActivity {
             }
         });
 
+        playerScreenMode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                youTubePlayer.pause();
+                youTubePlayerView.setVisibility(View.INVISIBLE);
+
+            }
+        });
+
     }
 
     public void playVideo(String videoId,float seekAt)
@@ -217,12 +236,14 @@ public class VideoListActivity extends AppCompatActivity {
         });
     }
 
+    String videoId;
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
-                String videoId=data.getStringExtra("video_id");
+                videoId=data.getStringExtra("video_id");
                 int seekTo = data.getIntExtra("seek_to",-1);
 
                 if(seekTo!=-1)

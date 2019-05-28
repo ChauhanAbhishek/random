@@ -45,6 +45,8 @@ public class VideoPlayerActivity extends YouTubeBaseActivity implements com.goog
 
         playerView.initialize(API_KEY,this);
 
+
+
         Intent i = getIntent();
 
         //change to PARCELABLE
@@ -75,6 +77,14 @@ public class VideoPlayerActivity extends YouTubeBaseActivity implements com.goog
         }
 
         this.youTubePlayer=youTubePlayer;
+
+        youTubePlayer.setFullscreen(false);
+
+
+
+
+
+
 
 
 
