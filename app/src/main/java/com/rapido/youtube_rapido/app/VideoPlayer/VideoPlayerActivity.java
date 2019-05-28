@@ -1,5 +1,6 @@
 package com.rapido.youtube_rapido.app.VideoPlayer;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -28,6 +29,10 @@ public class VideoPlayerActivity extends YouTubeBaseActivity implements com.goog
     String API_KEY = "AIzaSyB0uZhLck6cUIMJaBLKHqhmiI9OKDXdTGw";
     String testId = "G8PaeXJwddc" ;
     String videoId = "";
+
+    YouTubePlayer youTubePlayer;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,19 +43,14 @@ public class VideoPlayerActivity extends YouTubeBaseActivity implements com.goog
 
         playerView.initialize(API_KEY,this);
 
-
-
         Intent i = getIntent();
 
         //change to PARCELABLE
         Item item = (Item)i.getSerializableExtra("item_object");
         videoId= item.getId();
 
-
         activityVideoPlayerBinding.playerUi.title.setText(item.getSnippet().getTitle());
         activityVideoPlayerBinding.playerUi.owner.setText(item.getSnippet().getChannelTitle());
-
-
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         //setSupportActionBar(toolbar);
@@ -71,6 +71,8 @@ public class VideoPlayerActivity extends YouTubeBaseActivity implements com.goog
         {
             youTubePlayer.loadVideo(videoId);
         }
+
+        this.youTubePlayer=youTubePlayer;
     }
 
     @Override
@@ -127,5 +129,31 @@ public class VideoPlayerActivity extends YouTubeBaseActivity implements com.goog
     @Override
     public void onSeekTo(int i) {
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        int total = youTubePlayer.getDurationMillis()/1000;
+        int current = youTubePlayer.getCurrentTimeMillis()/1000;
+
+        Log.d("cnrp",total+"");
+
+
+        if(youTubePlayer!=null&&total>current)
+        {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("seek_to",current);
+            returnIntent.putExtra("video_id",videoId);
+            setResult(Activity.RESULT_OK,returnIntent);
+            finish();
+        }
+        else
+        {
+            Intent returnIntent = new Intent();
+            setResult(Activity.RESULT_CANCELED, returnIntent);
+            finish();
+        }
+
+        //super.onBackPressed();
     }
 }

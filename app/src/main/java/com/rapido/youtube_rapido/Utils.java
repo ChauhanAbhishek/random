@@ -6,6 +6,8 @@ import android.net.NetworkInfo;
 
 public class Utils {
 
+    public static int PLAYER_START_REQ=1;
+
     public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivity =(ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 

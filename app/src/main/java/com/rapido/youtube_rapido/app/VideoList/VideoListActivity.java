@@ -1,24 +1,33 @@
 package com.rapido.youtube_rapido.app.VideoList;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.youtube.player.YouTubePlayerView;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer;
+import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener;
 import com.rapido.youtube_rapido.R;
 import com.rapido.youtube_rapido.app.Event;
 import com.rapido.youtube_rapido.app.VideoPlayer.VideoPlayerActivity;
 import com.rapido.youtube_rapido.app.YoutubeApplication;
 import com.rapido.youtube_rapido.app.service.ApiService;
+import com.rapido.youtube_rapido.databinding.ActivityMainBinding;
 import com.rapido.youtube_rapido.model.response.Item;
 import com.rapido.youtube_rapido.model.response.VideoResponse;
 import com.rapido.youtube_rapido.modules.videolist.view.adapter.VideoListAdapter;
@@ -40,15 +49,20 @@ public class VideoListActivity extends AppCompatActivity {
     LiveData<Event<String>> toastMessage;
     LiveData<Boolean> isReqSent;
 
+    com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView youTubePlayerView;
+    ActivityMainBinding activityMainBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        activityMainBinding = DataBindingUtil.setContentView(this,R.layout.activity_main);
+
 
         apiService = YoutubeApplication.getInstance().getApplicationComponent().apiService();
 
 
-        rvVideos = findViewById(R.id.rv_videos);
+        rvVideos = activityMainBinding.rvVideos;
+        youTubePlayerView = activityMainBinding.youtubePlayerView;
         rvVideos.setLayoutManager(new LinearLayoutManager(this,
                 RecyclerView.VERTICAL, false));
 
@@ -138,30 +152,56 @@ public class VideoListActivity extends AppCompatActivity {
 
         videoListViewModel.getVideos();
 
-        videoListViewModel.getOpenVideoPlayer().observe(this, new Observer<Event<Item>>() {
+        videoListViewModel.getPlayerVisibility().observe(this, new Observer<Event<Boolean>>() {
             @Override
-            public void onChanged(Event<Item> taskIdEvent) {
-                Item item = taskIdEvent.getContentIfNotHandled();
+            public void onChanged(Event<Boolean> taskIdEvent) {
+                Boolean item = taskIdEvent.getContentIfNotHandled();
                 Log.d("cnrc","clicked2 " + item);
 
-                if (item != null) {
-                    playVideo(item);
-                }
+              if(youTubePlayerView!=null)
+              {
+                  youTubePlayerView.setVisibility(View.GONE);
+              }
 
             }
         });
 
+        initializePlayer();
+
 
 
     }
 
-    public void playVideo(Item item)
+    private YouTubePlayer youTubePlayer;
+
+    public void initializePlayer()
     {
-        // Remember to change to PARCELABLE to send data
-        Intent i = new Intent(this, VideoPlayerActivity.class);
-        i.putExtra("item_object", item);
-        startActivity(i);
+        getLifecycle().addObserver(youTubePlayerView);
+
+        youTubePlayerView.addYouTubePlayerListener(new AbstractYouTubePlayerListener() {
+            @Override
+            public void onReady(@NonNull YouTubePlayer youTubePlayer) {
+                VideoListActivity.this.youTubePlayer=youTubePlayer;
+            }
+
+            @Override
+            public void onStateChange(YouTubePlayer youTubePlayer, PlayerConstants.PlayerState state) {
+                super.onStateChange(youTubePlayer, state);
+                if(state==PlayerConstants.PlayerState.ENDED)
+                {
+                    youTubePlayerView.setVisibility(View.INVISIBLE);
+                }
+            }
+        });
+
+
     }
+
+    public void playVideo(String videoId,float seekAt)
+    {
+        youTubePlayer.loadVideo(videoId, seekAt);
+    }
+
 
     public void setUpScrollEndListener()
     {
@@ -177,6 +217,26 @@ public class VideoListActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                String videoId=data.getStringExtra("video_id");
+                int seekTo = data.getIntExtra("seek_to",-1);
+
+                if(seekTo!=-1)
+                {
+                    youTubePlayerView.setVisibility(View.VISIBLE);
+                    playVideo(videoId,seekTo);
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
+    }//onActivityResult
 
 
 }

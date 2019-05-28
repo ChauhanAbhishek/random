@@ -62,4 +62,8 @@ dependencies {
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.0.0"
     implementation project(path: ':YouTubeAndroidPlayerApi')
 
+
+    implementation 'com.pierfrancescosoffritti.androidyoutubeplayer:core:10.0.3'
+
+
 }

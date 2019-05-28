@@ -17,6 +17,7 @@ import androidx.databinding.DataBindingUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.rapido.youtube_rapido.R;
+import com.rapido.youtube_rapido.Utils;
 import com.rapido.youtube_rapido.app.VideoList.VideoListViewModel;
 import com.rapido.youtube_rapido.app.VideoPlayer.VideoPlayerActivity;
 import com.rapido.youtube_rapido.databinding.ItemVideoItemBinding;
@@ -121,13 +122,13 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 @Override
                 public void onClick(View v) {
                     Log.d("cnrc","clicked");
-                    //videoModel.playVideo(item);
+                    videoModel.setPlayerVisibility(false);
 
                     Intent i = new Intent(context, VideoPlayerActivity.class);
                     i.putExtra("item_object", item);
                     ActivityOptions options = ActivityOptions
                             .makeSceneTransitionAnimation((Activity) context, itemVideoItemBinding.ivVideo, "robot");
-                    context.startActivity(i,options.toBundle());
+                    ((Activity) context).startActivityForResult(i, Utils.PLAYER_START_REQ,options.toBundle());
                 }
 
             });
