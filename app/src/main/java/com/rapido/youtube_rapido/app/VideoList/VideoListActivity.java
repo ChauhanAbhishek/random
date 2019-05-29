@@ -76,9 +76,6 @@ public class VideoListActivity extends AppCompatActivity {
                 RecyclerView.VERTICAL, false));
 
         videoListViewModel  = ViewModelProviders.of(this).get(VideoListViewModel.class);
-
-
-
         videoListAdapter = new VideoListAdapter(videoListViewModel,this);
 
         rvVideos.setAdapter(videoListAdapter);
@@ -159,7 +156,10 @@ public class VideoListActivity extends AppCompatActivity {
 
         setUpScrollEndListener();
 
-        videoListViewModel.getVideos();
+        if(liveData.getValue()==null)
+        {
+            videoListViewModel.getVideos();
+        }
 
         videoListViewModel.getPlayerVisibility().observe(this, new Observer<Event<Boolean>>() {
             @Override
