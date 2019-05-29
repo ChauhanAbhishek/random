@@ -70,7 +70,7 @@ public class VideoListActivity extends AppCompatActivity {
         youTubePlayerView = activityMainBinding.youtubePlayerView;
 
          playerScreenMode =new ImageView(this);
-        playerScreenMode.setImageResource(R.drawable.ic_close_white_36dp);
+        playerScreenMode.setImageResource(R.drawable.baseline_clear_white_24);
         youTubePlayerView.getPlayerUiController().addView(playerScreenMode);
         rvVideos.setLayoutManager(new LinearLayoutManager(this,
                 RecyclerView.VERTICAL, false));
