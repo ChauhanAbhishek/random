@@ -56,9 +56,6 @@ public class VideoListViewModel extends ViewModel implements ViewModelNonUIChang
 
     public void getVideos()
     {
-        //Log.d("cnrr",nextPageToken.getValue());
-
-
 
         if(!isReqSent)
         {

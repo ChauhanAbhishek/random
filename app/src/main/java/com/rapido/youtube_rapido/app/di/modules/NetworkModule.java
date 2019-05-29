@@ -22,6 +22,7 @@ import dagger.Provides;
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -44,10 +45,14 @@ public class NetworkModule {
                 Log.d("cnrr","intercepted");
                 if (Utils.isNetworkAvailable(context)) {
                     int maxAge = 5; // read from cache for 5 seconds
+                    Log.d("cnrr","intercepted t");
+
                     return originalResponse.newBuilder()
                             .header("Cache-Control", "public, max-age=" + maxAge)
                             .build();
                 } else {
+                    Log.d("cnrr","intercepted f");
+
                     int maxStale = 60 * 5; // tolerate 5 minutes stale
                     return originalResponse.newBuilder()
                             .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
@@ -86,10 +91,24 @@ public class NetworkModule {
 
     @ApplicationScope
     @Provides
-    OkHttpClient okHttpClient(Cache cache,HttpLoggingInterceptor httpLoggingInterceptor,Interceptor networkInterceptor) {
+    OkHttpClient okHttpClient(Cache cache,HttpLoggingInterceptor httpLoggingInterceptor,Interceptor networkInterceptor,Context context) {
         return new OkHttpClient.Builder()
-                .addInterceptor(httpLoggingInterceptor)
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public okhttp3.Response intercept(Chain chain) throws IOException {
+                        Request request = chain.request();
+                        if (!Utils.isNetworkAvailable(context)) {
+                            int maxStale = 60 * 5; // Offline cache available for 30 days
+                            request = request.newBuilder()
+                                    .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                                    .removeHeader("Pragma")
+                                    .build();
+                        }
+                        return chain.proceed(request);
+                    }
+                })
                 .addNetworkInterceptor(networkInterceptor)
+
                 .cache(cache)
                 .build();
     }
