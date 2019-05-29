@@ -154,13 +154,22 @@ public class VideoPlayerActivity extends YouTubeBaseActivity implements com.goog
 
     @Override
     public void onBackPressed() {
+
+        if(youTubePlayer==null)
+        {
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("seek_to",0);
+            returnIntent.putExtra("video_id",videoId);
+            setResult(Activity.RESULT_OK,returnIntent);
+            finish();
+        }
         int total = youTubePlayer.getDurationMillis()/1000;
         int current = youTubePlayer.getCurrentTimeMillis()/1000;
 
         Log.d("cnrp",total+"");
 
 
-        if(youTubePlayer!=null&&total>current)
+        if(total>current)
         {
             Intent returnIntent = new Intent();
             returnIntent.putExtra("seek_to",current);

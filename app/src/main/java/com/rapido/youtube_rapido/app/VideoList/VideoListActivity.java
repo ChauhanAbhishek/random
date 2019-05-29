@@ -50,7 +50,7 @@ public class VideoListActivity extends AppCompatActivity {
     VideoListAdapter videoListAdapter;
     LiveData<List<Item>> liveData;
     LiveData<Event<String>> toastMessage;
-    LiveData<Boolean> isReqSent;
+    LiveData<Event<Boolean>> isReqSentEvent;
 
     com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView youTubePlayerView;
     ActivityMainBinding activityMainBinding;
@@ -114,7 +114,7 @@ public class VideoListActivity extends AppCompatActivity {
 
         liveData = videoListViewModel.getmObservableVideoList();
         toastMessage = videoListViewModel.getToastMessage();
-        isReqSent = videoListViewModel.getIsReqSent();
+        isReqSentEvent = videoListViewModel.getIsReqSent();
         liveData.observe(this, new Observer<List<Item>>() {
             @Override
             public void onChanged(@Nullable List<Item> videoList) {
@@ -137,11 +137,16 @@ public class VideoListActivity extends AppCompatActivity {
             }
         });
 
-        isReqSent.observe(this, new Observer<Boolean>() {
+        isReqSentEvent.observe(this, new Observer<Event<Boolean>>() {
             @Override
-            public void onChanged(@Nullable Boolean isReqSent) {
+            public void onChanged(@Nullable Event<Boolean> isReqSent) {
                 Log.d("cnrrr","reqsent " + isReqSent);
-                if(isReqSent)
+                Boolean req = isReqSent.getContentIfNotHandled();
+                if(req==null)
+                {
+                    return;
+                }
+                if(req)
                 {
                     Item item = new Item();
                     videoListAdapter.addItem(item);
@@ -158,6 +163,7 @@ public class VideoListActivity extends AppCompatActivity {
 
         if(liveData.getValue()==null)
         {
+            Log.d("cnrt","it is null");
             videoListViewModel.getVideos();
         }
 

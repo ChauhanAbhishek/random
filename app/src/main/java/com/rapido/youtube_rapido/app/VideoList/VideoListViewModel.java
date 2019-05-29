@@ -25,20 +25,25 @@ public class VideoListViewModel extends ViewModel implements ViewModelNonUIChang
     private  MutableLiveData<Event<Boolean>> mPlayerVisibility ;
 
 
-    MutableLiveData<Boolean> isReqSent;
+    boolean isReqSent=false;
+
+    MutableLiveData<Event<Boolean>> isReqSentEvent;
+
+
+
 
     public VideoListViewModel()
     {
         videoRepository = YoutubeApplication.getInstance().getApplicationComponent().videoRepository();
         mObservableVideoList =  Transformations.map(videoRepository.getObservableVideoList(), videos -> getVideos(videos));
         videoRepository.setViewModelNonUIChangesListener(this);
-        isReqSent = new MutableLiveData<>();
+        isReqSentEvent = new MutableLiveData<>();
         toastMessage = Transformations.map(videoRepository.getToastMessage(), toastMessage -> toastmsg(toastMessage));
         mPlayerVisibility  = new MutableLiveData<>();
     }
 
-    public LiveData<Boolean> getIsReqSent() {
-        return isReqSent;
+    public LiveData<Event<Boolean>> getIsReqSent() {
+        return isReqSentEvent;
     }
 
 
@@ -53,15 +58,13 @@ public class VideoListViewModel extends ViewModel implements ViewModelNonUIChang
     {
         //Log.d("cnrr",nextPageToken.getValue());
 
-        if(isReqSent.getValue()==null)
-        {
-            isReqSent.setValue(false);
-        }
 
-        if(!isReqSent.getValue())
+
+        if(!isReqSent)
         {
             videoRepository.getVideos(nextPageToken);
-            isReqSent.setValue(true);
+            isReqSentEvent.setValue(new Event<Boolean>(true));
+            isReqSent=true;
         }
 
 
@@ -75,8 +78,18 @@ public class VideoListViewModel extends ViewModel implements ViewModelNonUIChang
 
     public List<Item> getVideos(List<Item> videoList)
     {
-        isReqSent.setValue(false);
-        return videoList;
+        isReqSent=false;
+        isReqSentEvent.setValue(new Event<>(false));
+        if(mObservableVideoList.getValue()==null)
+        {
+            return videoList;
+        }
+        else
+        {
+            List<Item> items = mObservableVideoList.getValue();
+            items.addAll(videoList);
+            return items;
+        }
     }
 
     public Event<String> toastmsg(Event<String> toastMessage)
@@ -108,7 +121,8 @@ public class VideoListViewModel extends ViewModel implements ViewModelNonUIChang
     @Override
     public void errorOccurred()
     {
-        isReqSent.setValue(false);
+        isReqSent=false;
+        isReqSentEvent.setValue(new Event<>(false));
     }
 
 

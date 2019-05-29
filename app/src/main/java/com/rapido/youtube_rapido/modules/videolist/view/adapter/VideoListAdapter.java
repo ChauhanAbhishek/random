@@ -43,7 +43,7 @@ public class VideoListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     }
 
     public void updateList(List<Item> items) {
-        this.items.addAll(items);
+        this.items=items;
         notifyDataSetChanged();
     }
 
