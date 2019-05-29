@@ -17,6 +17,8 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import java.io.IOException;
 
+import javax.inject.Named;
+
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.Cache;
@@ -36,6 +38,7 @@ public class NetworkModule {
 
     @ApplicationScope
     @Provides
+    @Named ("online")
     Interceptor networkInterceptor(Context context) {
 
         return new Interceptor() {
@@ -60,6 +63,27 @@ public class NetworkModule {
                 }
             }
         };
+    }
+
+    @ApplicationScope
+    @Provides
+    @Named ("offline")
+    Interceptor offlineInterceptor(Context context) {
+
+      return new Interceptor() {
+          @Override
+          public okhttp3.Response intercept(Chain chain) throws IOException {
+              Request request = chain.request();
+              if (!Utils.isNetworkAvailable(context)) {
+                  int maxStale = 60 * 5; // Offline cache available for 30 days
+                  request = request.newBuilder()
+                          .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
+                          .removeHeader("Pragma")
+                          .build();
+              }
+              return chain.proceed(request);
+          }
+      };
     }
 
     @ApplicationScope
@@ -91,24 +115,10 @@ public class NetworkModule {
 
     @ApplicationScope
     @Provides
-    OkHttpClient okHttpClient(Cache cache,HttpLoggingInterceptor httpLoggingInterceptor,Interceptor networkInterceptor,Context context) {
+    OkHttpClient okHttpClient(Cache cache,@Named ("offline") Interceptor offlineInterceptor,@Named ("online")Interceptor networkInterceptor,Context context) {
         return new OkHttpClient.Builder()
-                .addInterceptor(new Interceptor() {
-                    @Override
-                    public okhttp3.Response intercept(Chain chain) throws IOException {
-                        Request request = chain.request();
-                        if (!Utils.isNetworkAvailable(context)) {
-                            int maxStale = 60 * 5; // Offline cache available for 30 days
-                            request = request.newBuilder()
-                                    .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStale)
-                                    .removeHeader("Pragma")
-                                    .build();
-                        }
-                        return chain.proceed(request);
-                    }
-                })
+                .addInterceptor(offlineInterceptor)
                 .addNetworkInterceptor(networkInterceptor)
-
                 .cache(cache)
                 .build();
     }
